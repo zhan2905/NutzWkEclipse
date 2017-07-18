@@ -1,0 +1,583 @@
+<%
+layout("/layouts/platform.html"){
+%>
+<header class="header navbar bg-white shadow">
+    <div class="btn-group tool-button">
+        <button class="btn btn-danger navbar-btn" onclick="delCheck()"><i class="ti-close"></i>删除客户</button>
+        <a class="btn btn-primary navbar-btn" ><i class="ti-plus"></i>导入</a>
+        <!-- <a class="btn btn-primary navbar-btn" href="${base}/platform/customer/customermain/add" data-pjax><i class="ti-plus"></i>新增客户</a> -->
+    </div> 
+    <div class="pull-right">
+        <button class="btn btn-primary navbar-btn" onclick="sublime.toggleFilter('.cd-panel')"><i
+                class="fa fa-sliders"></i> 筛选
+        </button>
+    </div>
+</header>
+
+<style>
+.border{
+    border-bottom: 1px solid #e5e5e5;
+}
+</style>
+<div class=panel-body style="padding-top: 50px;">
+    <div class="table-responsive no-border">
+        <input id="unitid" type="hidden">
+        <table class="table table-bordered table-striped mg-t datatable">
+            <thead>
+            <tr>
+				<th>用户号码</th>
+				<th>宽带账号</th>
+				<th>业务名称</th>
+				<th>用户状态</th>
+				<th>业务状态</th>
+				<th>免费期</th>
+				<th>外呼时间</th>
+				<th>功能开通时间</th>
+				<th>计费开通时间</th>
+				<th>黑名单</th>
+				<th>白名单</th>
+				<th>屏蔽</th>
+				<th>所属地市</th>
+				<th>创建用户</th>
+				<th>创建时间</th>
+				<th>操作</th>
+        </table>
+    </div>
+</div>
+<div class="cd-panel from-right">
+    <header class="cd-panel-header">
+        <h4>高级筛选</h4>
+    </header>
+    <div class="cd-panel-container">
+        <div class="cd-panel-content shadow">
+            <div class="form-group">
+                <label for="customerNo">用户号码</label>
+                <input type="text" id="customerNo" name="customerNo" onclick="this.value=''" class="form-control" placeholder="模糊查询">
+            </div>
+            <div class="form-group">
+                <label for="broadbandAccount">宽带号码</label>
+                <input type="text" id="broadbandAccount" name="broadbandAccount" onclick="this.value=''" class="form-control" placeholder="模糊查询">
+            </div>
+<!--             <div class="form-group">
+                <label for="broadbandAccount">备注</label>
+                <input type="text" id="remark" name="remark" onclick="this.value=''" class="form-control" placeholder="模糊查询">
+            </div> -->
+            <div class="form-group">
+                <label for="queryCityCode">所属地市</label>
+                   <div class="btn-group btn-group-justified">
+		            <select id="queryCityCode" name="queryCityCode" class="form-control" >
+		            	<option value="" >全部</option>
+		                <% for(item in areaCodeList){
+		                %>
+		                <option value="${item.cityCode}" >${item.cityName}</option>
+		                <%
+		                } %>
+		            </select>
+			    </div>
+            </div>
+            <div class="form-group">
+                <label for="queryServiceId">业务类型</label>
+                   <div class="btn-group btn-group-justified">
+		            <select id="queryServiceId" name="queryServiceId" class="form-control" >
+		            	<option value="" >全部</option>
+		                <% for(item in serviceMainList){
+		                %>
+		                <option value="${item.id}" >${item.service_name}</option>
+		                <%
+		                } %>
+		            </select>
+				   </div>
+            </div>
+            <div class="form-group">
+                <label for="queryMarketingAssistant">是否地推</label>
+                   <div class="btn-group btn-group-justified">
+		            <select id="queryMarketingAssistant" name="queryMarketingAssistant" class="form-control" >
+		            	<option value="" >全部</option>
+		                <% for(item in trueFalse){
+		                %>
+		                <option value="${item.code}" >${item.name}</option>
+		                <%
+		                } %>
+		            </select>
+				   </div>
+            </div>
+            <div class="form-group">
+                <label for="queryCustomerState">用户状态</label>
+                   <div class="btn-group btn-group-justified">
+		            <select id="queryCustomerState" name="queryCustomerState" class="form-control" >
+		            	<option value="" >全部</option>
+		                <% for(item in customerStateList){
+		                %>
+		                <option value="${item.code}" >${item.name}</option>
+		                <%
+		                } %>
+		            </select>
+				   </div>
+            </div>
+            <div class="form-group">
+                <label for="queryBlackList">是否过滤黑名单</label>
+                   <div class="btn-group btn-group-justified">
+		            <select id="queryBlackList" name="queryBlackList" class="form-control" >
+		            	<option value="" >全部</option>
+		                <% for(item in trueFalse){
+		                %>
+		                <option value="${item.code}" >${item.name}</option>
+		                <%
+		                } %>
+		            </select>
+				   </div>
+            </div>
+            <div class="form-group">
+				<label for="queryFunctionStartDate" class="control-label">功能开始时间</label>
+                <div class="col-sm-12 input-group date form_datetime "  data-date="${@date.getDate()}" data-date-format="dd MM yyyy - HH:ii p" data-link-field="at">
+                    <input type="text" size="16" readonly class="form-control" id="queryFunctionStartDate" name="queryFunctionStartDate" value="">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                </div>
+			</div>
+            <div class="form-group">
+				<label for="queryFunctionEndDate" class="control-label">功能结束时间</label>
+                <div class="col-sm-12 input-group date form_datetime "  data-date="${@date.getDate()}" data-date-format="dd MM yyyy - HH:ii p" data-link-field="at">
+                    <input type="text" size="16" readonly class="form-control" id="queryFunctionEndDate" name="queryFunctionEndDate" value="">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                </div>
+			</div>
+			<div class="form-group">
+				<label for="queryChargeStartDate" class="control-label">计费开始时间</label>
+                <div class="col-sm-12 input-group date form_datetime "  data-date="${@date.getDate()}" data-date-format="dd MM yyyy - HH:ii p" data-link-field="at">
+                    <input type="text" size="16" readonly class="form-control" id="queryChargeStartDate" name="queryChargeStartDate" value="">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                </div>
+			</div>
+            <div class="form-group">
+				<label for="queryChargeEndDate" class="control-label">计费结束时间</label>
+                <div class="col-sm-12 input-group date form_datetime "  data-date="${@date.getDate()}" data-date-format="dd MM yyyy - HH:ii p" data-link-field="at">
+                    <input type="text" size="16" readonly class="form-control" id="queryChargeEndDate" name="queryChargeEndDate" value="">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                </div>
+			</div>
+			<div class="form-group">
+				<label for="queryUpdateStartDate" class="control-label">更新开始时间</label>
+                <div class="col-sm-12 input-group date form_datetime "  data-date="${@date.getDate()}" data-date-format="dd MM yyyy - HH:ii p" data-link-field="at">
+                    <input type="text" size="16" readonly class="form-control" id="queryUpdateStartDate" name="queryUpdateStartDate" value="">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                </div>
+			</div>
+            <div class="form-group">
+				<label for="queryUpdateEndDate" class="control-label">更新结束时间</label>
+                <div class="col-sm-12 input-group date form_datetime "  data-date="${@date.getDate()}" data-date-format="dd MM yyyy - HH:ii p" data-link-field="at">
+                    <input type="text" size="16" readonly class="form-control" id="queryUpdateEndDate" name="queryUpdateEndDate" value="">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                </div>
+			</div>
+            <button id="searchBtn" type="button" class="btn btn-default">查询</button>
+        </div>
+    </div>
+</div>
+<div id="dialogImp" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" style="text-align:center;">上传文档</h4>
+            </div>
+            <div class="modal-body">
+        		<div class="row" style="padding-left: 20px;">
+                    <!-- <input type="text" id="code" class="form-control" name="code" data-parsley-required="true"
+                           placeholder="唯一标识 key"> -->
+                    <select id="queryServiceId" name="queryServiceId" class="form-control" >
+		                <% for(item in serviceMainList){
+		                %>
+		                <option value="${item.id}" >${item.service_name}</option>
+		                <%
+		                } %>
+	            	</select>
+                </div>
+                <div class="row" style="padding: 20px;">
+                    <div id="queue"></div>
+                    <div class="input-group">
+                        <input id="file_upload" name="file_upload" type="file" multiple="false">
+                        <span class="input-group-btn">
+                  <button class="btn btn-color current-time" type="button" id="upload">上传<i
+                          class="ti-upload ml5"></i></button>
+                  </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dialogDetail" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
+	<div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	                <h4 class="modal-title" style="text-align:center;">详细信息</h4>
+	            </div>
+			    <div class="modal-body">
+			    </div>
+	      </div>
+    </div>
+</div>
+<script id="tpl_detail" type="text/html">
+        <div class="row border" >
+			<label  class="col-sm-2 control-label">用户号码</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.customerNo}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">宽带账号</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.broadbandAccount}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">导入时间</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.importTime}}</span>
+			</div>
+		</div>
+		<div class="row border" >
+			<label  class="col-sm-2 control-label">用户姓名</label>
+			<div class="col-sm-8">
+				<span class="cell">{{data.customerName}}</span>
+			</div>
+		</div>
+		<div class="row border">
+			<label  class="col-sm-2 control-label">号码类型</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.noType}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">所属地市</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.cityCode}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">业务名称</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.serviceName}}</span>
+			</div>
+		</div>
+		<div class="row border">
+			<label  class="col-sm-2 control-label">用户状态</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.customerState}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">免费期</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.freeDays}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">外呼时间</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.callTime}}</span>
+			</div>
+		</div>
+		<div class="row border">
+			<label  class="col-sm-2 control-label">功能开通</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.functionStartDate}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">功能结束</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.functionEndDate}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">开通用户</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.functionUser}}</span>
+			</div>
+		</div>
+		<div class="row border">
+			<label  class="col-sm-2 control-label">计费开通</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.chargeStartDate}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">计费结束</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.chargeEndDate}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">计费用户</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.chargeUser}}</span>
+			</div>
+		</div>
+		<div class="row border">
+			<label  class="col-sm-2 control-label">计费类型</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.chargeType}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">创建时间</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.createTime}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">创建用户</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.createUser}}</span>
+			</div>
+		</div>
+		<div class="row border">
+			<label  class="col-sm-2 control-label">营销方式</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.saleWay}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">扩展1</label>
+			<div class="col-sm-6">
+				<span class="cell">{{data.expand1}}</span>
+			</div>
+		</div>
+		<div class="row border">
+			<label  class="col-sm-2 control-label">扩展2</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.expand2}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">扩展4</label>
+			<div class="col-sm-6">
+				<span class="cell">{{data.expand4}}</span>
+			</div>
+		</div>
+		<div class="row border ">
+			<label  class="col-sm-2 control-label">扩展3</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.expand3}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">备注</label>
+			<div class="col-sm-6">
+				<span class="cell">{{data.remark}}</span>
+			</div>
+		</div>
+		<div class="row border">
+			<label  class="col-sm-2 control-label">是否充值</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.recharge}}</span>
+			</div>
+			<label  class="col-sm-2 control-label">快递单号</label>
+			<div class="col-sm-2">
+				<span class="cell">{{data.saleNumber}}</span>
+			</div>
+		</div>
+</script>
+<div id="dialogDelete" class="modal fade bs-modal-sm" tabindex="-2" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h4 class="modal-title">删除</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                     删除后无法恢复，确定删除吗？ <br/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                <button id="ok" type="button" class="btn btn-primary" data-loading-text="正在删除...">确 定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script language="JavaScript">
+    var datatable;
+    $(document).ready(function () {
+		$('.form_datetime').datetimepicker({
+		    language:  'zh-CN',
+		    format:'yyyy-mm-dd',
+		    weekStart: 1,
+		    todayBtn:  true,
+		    autoclose: true,
+		    todayHighlight: true,
+		    startView: 2,
+		    forceParse: 0,
+		    showMeridian: true,
+		    minView:2
+		});
+    });
+    function initDatatable() {
+        datatable = $('.datatable').DataTable({
+            "dom": '<"toolbar">frtip',
+            "searching": false,
+            "processing": false,
+            "serverSide": true,
+            "select": true,
+            "ordering": true,
+            "language": {
+                "url": "${base}/assets/plugins/datatables/cn.json"
+            },
+            "preDrawCallback": function () {
+                sublime.showLoadingbar($(".main-content"));
+            },
+            "drawCallback": function () {
+                sublime.closeLoadingbar($(".main-content"));
+            },
+            "ajax": {
+                "url": "${base}/platform/customer/customermain/data",
+                "type": "post",
+                "data": function (d) {
+                	d.customerNo = $("#customerNo").val();
+                	d.broadbandAccount = $("#broadbandAccount").val();
+                	d.remark = $("#remark").val();
+                	d.cityCode = $("#queryCityCode").val();
+                	d.serviceId = $("#queryServiceId").val();
+                	d.marketingAssistant = $("#queryMarketingAssistant").val();
+                	d.customerState = $("#queryCustomerState").val();
+                	d.blackList = $("#queryBlackList").val();
+                	d.customerState = $("#queryCustomerState").val();
+                	d.functionStartDate = $("#queryFunctionStartDate").val();
+                	d.functionEndDate = $("#queryFunctionEndDate").val();
+                	d.chargeStartDate = $("#queryChargeStartDate").val();
+                	d.chargeEndDate = $("#queryChargeEndDate").val();
+                	d.updateStartDate = $("#queryUpdateStartDate").val();
+                	d.updateEndDate = $("#queryUpdateEndDate").val();
+                }
+            },
+            "order": [[0, "desc"]],
+            "columns": [
+				{"data": "customerno",className:"col-sm-1"},
+				{"data": "broadbandaccount",className:"col-sm-1"},
+				{"data": "servicename",className:"col-sm-1"},
+				{"data": "customerstate",className:"col-sm-1"},
+				{"data": "servicestate",className:"col-sm-1"},
+				{"data": "freedays",className:"col-sm-1"},
+				{"data": "calltime",className:"col-sm-1"},
+				{"data": "functionstartdate",className:"col-sm-1"},
+				{"data": "chargestartdate",className:"col-sm-1"},
+				{"data": "blacklist",className:"col-sm-1"},
+				{"data": "whitelist",className:"col-sm-1"},
+				{"data": "shielding",className:"col-sm-1"},
+				{"data": "citycode",className:"col-sm-1"},
+				{"data": "opby",className:"col-sm-1"},
+				{"data": "opat",className:"col-sm-1"},
+            ],
+            "columnDefs": [
+                {
+                    "render": function (data, type, row) {
+                        return '<div class="btn-group"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">' +
+                                ' <i class="ti-settings"></i> <span class="ti-angle-down"></span></button><ul class="dropdown-menu" role="menu">' +
+                                '<li><a href="javascript:;" onclick="detail(\'' + row.id + '\')" >查看</a></li>' +
+                                '<li><a href="${base}/platform/customer/customermain/edit/' + row.id + '" data-pjax>修改</a></li>' +
+                                '<li><a href="javascript:;" onclick="del(\'' + row.id + '\')">删除</a></li>' +
+                                '</ul></div>';
+                    },
+                    "targets": 15
+                }
+            ]
+        });
+        datatable.on('click', 'tr', function () {
+            $(this).toggleClass('selected');
+        });
+        $("#searchBtn").on('click', function () {
+            datatable.ajax.reload();
+        });
+    }
+    function del(id) {
+        var dialog = $("#dialogDelete");
+        dialog.modal("show");
+        dialog.find("#ok").unbind("click");
+        dialog.find("#ok").bind("click", function (event) {
+            var btn = $(this);
+            btn.button("loading");
+            $.post("${base}/platform/customer/customermain/delete/" + id, {}, function (data) {
+                if (data.code == 0) {
+                    datatable.ajax.reload(null,false);
+                } else {
+                    Toast.error(data.msg);
+                }
+                //重置按钮状态，关闭提示框
+                btn.button("reset");
+                dialog.modal("hide");
+            }, "json");
+        }); 
+    }
+    function delCheck() {
+        var chks = datatable.rows('.selected').data();
+        if (chks.length > 0) {
+            var ids = [];
+            $.each(chks, function (i, n) {
+                ids.push(n.id);
+            });
+            var dialog = $("#dialogDelete");
+            dialog.modal("show");
+            dialog.find("#ok").unbind("click");
+            dialog.find("#ok").bind("click", function (event) {
+                var btn = $(this);
+                btn.button("loading");
+                $.post("${base}/platform/customer/customermain/delete", {ids: ids.toString()}, function (data) {
+                    if (data.code == 0) {
+                        datatable.ajax.reload(null,false);
+                    } else {
+                        Toast.error(data.msg);
+                    }
+                    btn.button("reset");
+                    dialog.modal("hide");
+                }, "json");
+            });
+        } else {
+            Toast.warning("请先选择要删除的项目！");
+        }
+    }
+    function detail(id){
+    	var dialog = $("#dialogDetail");
+    	$.post("${base}/platform/customer/customermain/detailDo", {id:id}, function (data) {
+            if (data.code == 0) {
+            	$(".modal-body").html(template("tpl_detail",data));
+            } else {
+                Toast.error(data.msg);
+            }
+        }, "json");
+        dialog.modal("show");
+        dialog.find("#ok").unbind("click");
+        dialog.find("#ok").bind("click", function (event) {
+        	dialog.modal("hide");
+        });
+    }
+    $(function () {
+        initDatatable();
+        
+        $("#upload").on("click", function () {
+            if($("#queue").html()==""){
+                Toast.error("请选择类文件");
+                return false;
+            }
+            $('#file_upload').data('uploadifive').settings.uploadScript = "${base!}/platform/customer/customerMain/importDo";
+            $('#file_upload').uploadifive('upload');
+        });
+	    $('#file_upload').uploadifive({
+	        'auto': false,
+	        'multi': false,
+	        'width': '100%',
+	        'height': '35',
+	        'buttonText': '请选择xlsx或xls文件',
+	        'fileType': '*.xlsx;*.xls;',
+	        'fileSizeLimit': 1024,
+	        'queueSizeLimit': 1,
+	        'removeCompleted': true,
+	        'formData': {},
+	        'queueID': 'queue',
+	        'onUploadComplete': function (file, data) {
+	            data = JSON.parse(data);
+	            if (data.code == 0) {
+	                Toast.success(data.msg);
+	                $("#dialogImp").modal("hide");
+	                $("#queue").html("");
+	                window.location.reload();
+	                search();
+	            } else {
+	                $("#queue").html("");
+	                Toast.error(data.msg);
+	            }
+	        },
+	        'onDrop': function (file, fileDropCount) {
+	            $("#queue").html("");
+	        },
+	        'onClearQueue': function (queue) {
+	            $("#queue").html("");
+	        },
+	        'onCancel': function () {
+	            $("#queue").html("");
+	        }
+	    });
+    });
+</script>
+
+<%}%>

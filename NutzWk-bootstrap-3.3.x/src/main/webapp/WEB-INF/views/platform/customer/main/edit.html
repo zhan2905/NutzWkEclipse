@@ -1,0 +1,247 @@
+<%
+layout("/layouts/platform.html"){
+%>
+<header class="header navbar bg-white shadow">
+    <div class="btn-group tool-button">
+        <a class="btn btn-primary navbar-btn" href="${base}/platform/customer/customermain" data-pjax id="goback"><i class="ti-angle-left"></i>返回</a>
+    </div>
+</header>
+
+<div class="content-wrap">
+    <div class="wrapper" style="min-height:500px;">
+        <section class="panel panel-form">
+            <form id="addForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
+                  action="${base}/platform/customer/customermain/editDo" method="post">
+                <input id="id" name="id" value="${obj.id!}" type="hidden">
+                <div class="row mb10">
+                    <div class="col-lg-12">
+						<div class="form-group">
+							<!-- <label for="serviceId" class="col-sm-2 control-label">业务ID</label>
+							<div class="col-sm-3">
+								<input type="text" id="serviceId" class="form-control" name="serviceId" data-parsley-required="true"
+                                       placeholder="" value="${obj.serviceId!}">
+							</div> -->
+							<label for="serviceId" class="col-sm-2 control-label">业务类型</label>
+							<div class="col-sm-3">
+			                   <div class="btn-group btn-group-justified">
+					            <select id="serviceId" name="serviceId" class="form-control" >
+					            	<option value="" >全部</option>
+					                <% for(item in serviceMainList){
+					                %>
+					                <option value="${item.id}" <% if(item.id == obj.serviceId){ %> selected = "selected" <% } %> >${item.service_name}</option>
+					                <%
+					                } %>
+					            </select>
+							   </div>
+							</div>
+							<label for="customerNo" class="col-sm-2 control-label">用户号码</label>
+							<div class="col-sm-3">
+								<input type="text" id="customerNo" class="form-control" name="customerNo" data-parsley-required="true"
+                                       placeholder="" value="${obj.customerNo!}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="broadbandAccount" class="col-sm-2 control-label">宽带账号</label>
+							<div class="col-sm-3">
+								<input type="text" id="broadbandAccount" class="form-control" name="broadbandAccount" data-parsley-required="true"
+                                       placeholder="" value="${obj.broadbandAccount!}">
+							</div>
+							<label for="customerName" class="col-sm-2 control-label">用户姓名</label>
+							<div class="col-sm-3">
+								<input type="text" id="customerName" class="form-control" name="customerName" data-parsley-required="true"
+                                       placeholder="" value="${obj.customerName!}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="noType" class="col-sm-2 control-label">号码类型</label>
+							<div class="col-sm-3">
+								<input type="text" id="noType" class="form-control" name="noType" data-parsley-required="true"
+                                       placeholder="" value="${obj.noType!}">
+							</div>
+							<label for="cityCode" class="col-sm-2 control-label">所属地市</label>
+							<div class="col-sm-3">
+			                   <div class="btn-group btn-group-justified">
+					            <select id="cityCode" name="cityCode" class="form-control" >
+					            	<option value="" >全部</option>
+					                <% for(item in areaCodeList){
+					                %>
+					                <option value="${item.cityCode}" <% if(item.cityCode == obj.cityCode){ %> selected = "selected" <% } %> >${item.cityName}</option>
+					                <%
+					                } %>
+					            </select>
+						       </div>
+						    </div>
+						</div>
+						<div class="form-group">
+							<label for="customerState" class="col-sm-2 control-label">用户状态</label>
+							<div class="col-sm-3">
+			                   <div class="btn-group btn-group-justified">
+					            <select id="customerState" name="customerState" class="form-control" >
+					            	<option value="" >全部</option>
+					                <% for(item in customerStateList){
+					                %>
+					                <option value="${item.code}" <% if(item.code == obj.customerState){ %> selected = "selected" <% } %> >${item.name}</option>
+					                <%
+					                } %>
+					            </select>
+							   </div>
+							 </div>
+							<label for="serviceState" class="col-sm-2 control-label">业务状态</label>
+							<div class="col-sm-3">
+								<input type="text" id="serviceState" class="form-control" name="serviceState" data-parsley-required="true"
+                                       placeholder="" value="${obj.serviceState!}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="freeDays" class="col-sm-2 control-label">免费期</label>
+							<div class="col-sm-3">
+								<input type="text" id="freeDays" class="form-control" name="freeDays" data-parsley-required="true"
+                                       placeholder="" value="${obj.freeDays!}">
+							</div>
+							<label for="callTime" class="col-sm-2 control-label">外呼时间</label>
+							<div class="col-sm-3">
+								<input type="text" id="callTime" class="form-control" name="callTime" data-parsley-required="true"
+                                       placeholder="" value="${obj.callTime!}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="functionStartDate" class="col-sm-2 control-label">功能开通时间</label>
+							<div class="col-sm-3">
+								<label for="queryFunctionStartDate" class="control-label">功能开始时间</label>
+				                <div class="col-sm-12 input-group date form_datetime "  data-date="${@date.getDate()}" data-date-format="dd MM yyyy - HH:ii p" data-link-field="at">
+				                    <input type="text" size="16" readonly class="form-control" id="functionStartDate" name="functionStartDate" value="${obj.functionStartDate!}">
+				                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+				                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+				                </div>
+				            </div>
+							<label for="functionEndDate" class="col-sm-2 control-label">功能结束时间</label>
+							<div class="col-sm-3">
+								<input type="text" id="functionEndDate" class="form-control" name="functionEndDate" data-parsley-required="true"
+                                       placeholder="" value="${obj.functionEndDate!}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="functionUser" class="col-sm-2 control-label">功能开通用户</label>
+							<div class="col-sm-3">
+								<input type="text" id="functionUser" class="form-control" name="functionUser" data-parsley-required="true"
+                                       placeholder="" value="${obj.functionUser!}">
+							</div>
+							<label for="chargeStartDate" class="col-sm-2 control-label">计费开通时间</label>
+							<div class="col-sm-3">
+								<input type="text" id="chargeStartDate" class="form-control" name="chargeStartDate" data-parsley-required="true"
+                                       placeholder="" value="${obj.chargeStartDate!}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="chargeEndDate" class="col-sm-2 control-label">计费结束时间</label>
+							<div class="col-sm-3">
+								<input type="text" id="chargeEndDate" class="form-control" name="chargeEndDate" data-parsley-required="true"
+                                       placeholder="" value="${obj.chargeEndDate!}">
+							</div>
+							<label for="chargeUser" class="col-sm-2 control-label">计费开通用户</label>
+							<div class="col-sm-3">
+								<input type="text" id="chargeUser" class="form-control" name="chargeUser" data-parsley-required="true"
+                                       placeholder="" value="${obj.chargeUser!}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="importTime" class="col-sm-2 control-label">导入时间</label>
+							<div class="col-sm-3">
+								<input type="text" id="importTime" class="form-control" name="importTime" data-parsley-required="true"
+                                       placeholder="" value="${obj.importTime!}">
+							</div>
+							<label for="saleWay" class="col-sm-2 control-label">营销方式</label>
+							<div class="col-sm-3">
+								<input type="text" id="saleWay" class="form-control" name="saleWay" data-parsley-required="true"
+                                       placeholder="" value="${obj.saleWay!}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="remark" class="col-sm-2 control-label">备注</label>
+							<div class="col-sm-3">
+								<input type="text" id="remark" class="form-control" name="remark" data-parsley-required="true"
+                                       placeholder="" value="${obj.remark!}">
+							</div>
+							<label for="trackingNumber" class="col-sm-2 control-label">快递单号</label>
+							<div class="col-sm-3">
+								<input type="text" id="trackingNumber" class="form-control" name="trackingNumber" data-parsley-required="true"
+                                       placeholder="" value="${obj.trackingNumber!}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="mark" class="col-sm-2 control-label">标记</label>
+							<div class="col-sm-3">
+								<input type="text" id="mark" class="form-control" name="mark" data-parsley-required="true"
+                                       placeholder="" value="${obj.mark!}">
+							</div>
+							<label for="saleNumber" class="col-sm-2 control-label">协销号</label>
+							<div class="col-sm-3">
+								<input type="text" id="saleNumber" class="form-control" name="saleNumber" data-parsley-required="true"
+                                       placeholder="" value="${obj.saleNumber!}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="expand1" class="col-sm-2 control-label">扩展1</label>
+							<div class="col-sm-3">
+								<input type="text" id="expand1" class="form-control" name="expand1" data-parsley-required="true"
+                                       placeholder="" value="${obj.expand1!}">
+							</div>
+							<label for="expand2" class="col-sm-2 control-label">扩展2</label>
+							<div class="col-sm-3">
+								<input type="text" id="expand2" class="form-control" name="expand2" data-parsley-required="true"
+                                       placeholder="" value="${obj.expand2!}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="expand3" class="col-sm-2 control-label">扩展3</label>
+							<div class="col-sm-3">
+								<input type="text" id="expand3" class="form-control" name="expand3" data-parsley-required="true"
+                                       placeholder="" value="${obj.expand3!}">
+							</div>
+							<label for="expand4" class="col-sm-2 control-label">扩展4</label>
+							<div class="col-sm-3">
+								<input type="text" id="expand4" class="form-control" name="expand4" data-parsley-required="true"
+                                       placeholder="" value="${obj.expand4!}">
+							</div>
+						</div>
+
+                    </div>
+                </div>
+                <div class="col-lg-3"></div>
+                <div class="col-lg-6">
+                    <div class="form-group text-center">
+                        <label></label>
+
+                        <div>
+                            <button class="btn btn-primary btn-block btn-lg btn-parsley" data-loading-text="正在提交...">提交</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+    </div>
+</div>
+<script language="JavaScript">
+    $(document).ready(function () {
+        $('#addForm').ajaxForm({
+            dataType: 'json',
+            beforeSubmit: function (arr, form, options) {
+                form.find("button:submit").button("loading");
+            },
+            success: function (data, statusText, xhr, form) {
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                    setTimeout(function () {
+                        $("#goback").trigger("click");
+                    }, 1000);
+                } else {
+                    Toast.error(data.msg);
+                }
+                form.find("button:submit").button("reset");
+            }
+        });
+    });
+</script>
+
+<%}%>

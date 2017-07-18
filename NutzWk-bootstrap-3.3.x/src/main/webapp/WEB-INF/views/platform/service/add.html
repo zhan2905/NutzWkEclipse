@@ -1,0 +1,204 @@
+<%
+layout("/layouts/platform.html"){
+%>
+<header class="header navbar bg-white shadow">
+    <div class="btn-group tool-button">
+        <a class="btn btn-primary navbar-btn" href="${base}/platform/service/servicemain" data-pjax><i class="ti-angle-left"></i> 返回</a>
+    </div>
+</header>
+
+<div class="content-wrap">
+    <div class="wrapper" style="min-height:500px;">
+        <section class="panel panel-form">
+            <form id="addForm" role="form" class="form-horizontal parsley-form" data-parsley-validate
+                  action="${base}/platform/service/servicemain/addDo" method="post">
+                <div class="row mb10">
+                    <div class="col-lg-12">
+						<div class="form-group">
+							<label for="service_name" class="col-sm-2 control-label">业务名称</label>
+							<div class="col-sm-3">
+								<input type="text" id="service_name" class="form-control" name="service_name" data-parsley-required="true"
+                                       placeholder="" value="${obj.service_name!}">
+							</div>
+							<label for="service_type" class="col-sm-2 control-label">业务类型</label>
+							<div class="col-sm-3">
+								<!-- <input type="text" id="service_type" class="form-control" name="service_type" data-parsley-required="true"
+                                       placeholder=""> -->
+                                <div class="btn-group btn-group-justified">
+						        	<div >
+							            <select id="service_type" name="service_type" class="form-control" data-parsley-required="true">
+							                <% for(item in serviceType){
+							                %>
+							                <option value="${item.code}" >${item.name}</option>
+							                <%
+							                } %>
+							            </select>
+							        </div>
+							    </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="no_type" class="col-sm-2 control-label">号码类型</label>
+							<div class="col-sm-3">
+                                <div class="btn-group btn-group-justified">
+						        	<div >
+							            <select id="no_type" name="no_type" class="form-control" data-parsley-required="true">
+							                <% for(item in noType){
+							                %>
+							                <option value="${item.code}" >${item.name}</option>
+							                <%
+							                } %>
+							            </select>
+							        </div>
+							    </div>
+							</div>
+							<label for="no_type" class="col-sm-2 control-label">计费规则</label>
+							<div class="col-sm-3">
+                                <div class="btn-group btn-group-justified">
+						        	<div >
+							            <select id="charge_type" name="charge_type" class="form-control" data-parsley-required="true">
+							                <% for(item in chargeType){
+							                %>
+							                <option value="${item.code}" >${item.name}</option>
+							                <%
+							                } %>
+							            </select>
+							        </div>
+							    </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="charge_way" class="col-sm-2 control-label">计费途径</label>
+							<div class="col-sm-3">
+                                <div class="btn-group btn-group-justified">
+						        	<div >
+							            <select id="charge_way" name="charge_way" class="form-control" data-parsley-required="true">
+							                <% for(item in chargeWay){
+							                %>
+							                <option value="${item.code}" >${item.name}</option>
+							                <%
+							                } %>
+							            </select>
+							        </div>
+							    </div>
+							</div>
+							<label for="charge_value" class="col-sm-2 control-label">资费</label>
+							<div class="col-sm-3">
+								<input type="text" id="charge_value" class="form-control" name="charge_value" data-parsley-required="true"
+                                       placeholder="" value="${obj.charge_value!}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="service_sts" class="col-sm-2 control-label">业务状态</label>
+							<div class="col-sm-3">
+                                <div class="btn-group btn-group-justified">
+						        	<div >
+							            <select id="service_sts" name="service_sts" class="form-control" data-parsley-required="true">
+							                <% for(item in serviceSts){
+							                %>
+							                <option value="${item.code}" >${item.name}</option>
+							                <%
+							                } %>
+							            </select>
+							        </div>
+							    </div>
+							</div>
+							<label for="service_sts" class="col-sm-2 control-label">所属公司</label>
+							<div class="col-sm-3">
+                                <div class="btn-group btn-group-justified">
+						        	<div >
+							            <select id="company_id" name="company_id" class="form-control" data-parsley-required="true">
+							                <% for(item in company){
+							                %>
+							                <option value="${item.code}" >${item.name}</option>
+							                <%
+							                } %>
+							            </select>
+							        </div>
+							    </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="start_date" class="col-sm-2 control-label">开始时间</label>
+							<div class="col-sm-4">
+								<!-- <input type="text" id="start_date" class="form-control" name="start_date" data-parsley-required="true"
+                                       placeholder=""> -->
+                                <div class="col-sm-8 input-group date form_datetime "  data-date="1979-09-16" data-date-format="dd MM yyyy" data-link-field="at">
+                                    <input type="text" size="16" readonly class="form-control" value="${@date.getDate()}" data-parsley-required="true">
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                                </div>
+                                <input type="hidden" id="start_date" name="start_date" value="${@date.getDate()}" />
+							</div>
+							<label for="end_date" class="col-sm-1 control-label">结束时间</label>
+							<div class="col-sm-4">
+                                <div class="col-sm-8 input-group date form_datetime "  data-date="${@date.getDate()}" data-date-format="dd MM yyyy" data-link-field="at">
+                                    <input type="text" size="16" readonly class="form-control" >
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                                </div>
+                                <input type="hidden" id="end_date" name="end_date" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="remark" class="col-sm-2 control-label">备注</label>
+							<div class="col-sm-8">
+								<!-- <input type="text" id="remark" class="form-control" name="remark" data-parsley-required="true"
+                                       placeholder=""> -->
+                                <textarea id="remark" name="remark" class="form-control" value="${obj.remark!}" style="width:100%;height:80px;"></textarea>
+							</div>
+						</div>
+                    </div>
+                </div>
+                <div class="col-lg-3"></div>
+                <div class="col-lg-6">
+                    <div class="form-group text-center">
+                        <label></label>
+
+                        <div>
+                            <button class="btn btn-primary btn-block btn-lg btn-parsley" data-loading-text="正在提交...">提交</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+    </div>
+</div>
+<script language="JavaScript">
+    $(document).ready(function () {
+    	function init(){
+    		
+    	};
+    	init();
+    	$('.form_datetime').datetimepicker({
+            language:  'zh-CN',
+            format:'yyyy-mm-dd',
+            weekStart: 1,
+            todayBtn:  true,
+            autoclose: true,
+            todayHighlight: true,
+            startView: 2,
+            forceParse: 0,
+            showMeridian: true,
+            minView:2
+        });
+        $('#addForm').ajaxForm({
+            dataType: 'json',
+            beforeSubmit: function (arr, form, options) {
+                form.find("button:submit").button("loading");
+            },
+            success: function (data, statusText, xhr, form) {
+                if (data.code == 0) {
+                    Toast.success(data.msg);
+                    form.resetForm();
+                } else {
+                    Toast.error(data.msg);
+                }
+                form.find("button:submit").button("reset");
+            }
+        });
+    });
+</script>
+
+<%}%>
